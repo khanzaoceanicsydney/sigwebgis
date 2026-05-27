@@ -1,487 +1,558 @@
-<script>
-    // ==================== NAVIGASI 3 HALAMAN ====================
+<!doctype html>
+<html lang="id">
 
-    const homePage = document.getElementById('homePage');
-    const mapPage = document.getElementById('mapPage');
-    const sourcePage = document.getElementById('sourcePage');
+<head>
 
-    const navHome = document.getElementById('navHomeBtn');
-    const navMap = document.getElementById('navMapBtn');
-    const navSource = document.getElementById('navSourceBtn');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    const footerHome = document.getElementById('footerHomeBtn');
-    const footerMap = document.getElementById('footerMapBtn');
-    const footerSource = document.getElementById('footerSourceBtn');
+    <title>WebGIS Lingkungan Terbangun Kota Denpasar</title>
 
-    const exploreBtn = document.getElementById('exploreMapBtn');
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-    function setActiveButton(active) {
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 
-        [navHome, navMap, navSource].forEach(btn => {
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-            btn.classList.remove('bg-emerald-600', 'text-white');
-            btn.classList.add('bg-gray-200', 'text-gray-700');
+    <!-- Chart.js untuk statistik -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-        });
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-        active.classList.remove('bg-gray-200', 'text-gray-700');
-        active.classList.add('bg-emerald-600', 'text-white');
-    }
-
-    function showHome() {
-
-        homePage.classList.add('active');
-        mapPage.classList.remove('active');
-        sourcePage.classList.remove('active');
-
-        setActiveButton(navHome);
-    }
-
-    function showMap() {
-
-        homePage.classList.remove('active');
-        mapPage.classList.add('active');
-        sourcePage.classList.remove('active');
-
-        setActiveButton(navMap);
-
-        setTimeout(() => {
-
-            if (window.mapInstance) {
-                window.mapInstance.invalidateSize();
-            }
-
-            if (!window.mapInited) {
-                initMap();
-            }
-
-            if (!window.chartInited) {
-                initChart();
-            }
-
-        }, 100);
-    }
-
-    function showSource() {
-
-        homePage.classList.remove('active');
-        mapPage.classList.remove('active');
-        sourcePage.classList.add('active');
-
-        setActiveButton(navSource);
-    }
-
-    navHome.addEventListener('click', showHome);
-    navMap.addEventListener('click', showMap);
-    navSource.addEventListener('click', showSource);
-
-    footerHome.addEventListener('click', showHome);
-    footerMap.addEventListener('click', showMap);
-    footerSource.addEventListener('click', showSource);
-
-    exploreBtn.addEventListener('click', showMap);
-
-    // ==================== MAP ====================
-
-    let mapInited = false;
-    let chartInited = false;
-
-    function initMap() {
-
-        if (mapInited) return;
-
-        const map = L.map('map').setView([-8.6705, 115.2126], 11);
-
-        window.mapInstance = map;
-
-        // ==================== BASEMAP ====================
-
-        const osm = L.tileLayer(
-            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            {
-                attribution: '© OpenStreetMap'
-            }
-        ).addTo(map);
-
-        const satellite = L.tileLayer(
-            'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-            {
-                attribution: '© Google Satellite'
-            }
-        );
-
-        // ==================== STYLE ====================
-
-        function pointStyle(color) {
-
-            return {
-                radius: 6,
-                fillColor: color,
-                color: "#ffffff",
-                weight: 1,
-                opacity: 1,
-                fillOpacity: 0.9
-            };
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            margin: 0;
+            background: #f9fafb;
+            scroll-behavior: smooth;
         }
 
-        function polygonStyle(color) {
-
-            return {
-                color: color,
-                weight: 2,
-                fillColor: color,
-                fillOpacity: 0.4
-            };
+        #map {
+            width: 100%;
+            height: 600px;
+            border-radius: 20px;
+            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
         }
 
-        // ==================== POPUP ====================
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(6,95,70,0.85), rgba(14,116,144,0.85));
+        }
 
-        function popupContent(properties) {
+        .page {
+            display: none;
+        }
 
-            let content = `
-                <div style="font-family:'DM Sans',sans-serif;min-width:200px;">
-                    <div style="
-                        background:#059669;
-                        color:white;
-                        padding:8px;
-                        border-radius:8px 8px 0 0;
-                        margin:-12px -12px 10px -12px;
-                    ">
-                        <strong>📌 Informasi</strong>
+        .page.active {
+            display: block;
+        }
+
+        .stat-card {
+            transition: all 0.2s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .gallery-img {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gallery-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.3);
+        }
+
+        .custom-popup .leaflet-popup-content-wrapper {
+            border-radius: 12px;
+            border-left: 5px solid #059669;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center flex-wrap gap-4">
+            <div class="flex items-center space-x-2">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">WebGIS Lingkungan Terbangun <span class="text-emerald-700">Denpasar</span></h1>
+            </div>
+            <div class="flex space-x-2 md:space-x-4">
+                <button id="navHomeBtn" class="px-5 py-2 rounded-full font-semibold transition bg-emerald-600 text-white shadow-md">Home</button>
+                <button id="navMapBtn" class="px-5 py-2 rounded-full font-semibold transition bg-gray-200 text-gray-700">Peta</button>
+                <button id="navSourceBtn" class="px-5 py-2 rounded-full font-semibold transition bg-gray-200 text-gray-700">Sumber Data</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========== HALAMAN HOME ========== -->
+    <div id="homePage" class="page active">
+        <section class="relative h-[85vh] flex items-center justify-center text-white">
+            <img src="Denpasar.jpg" alt="Denpasar" class="absolute inset-0 w-full h-full object-cover">
+            <div class="absolute inset-0 hero-bg"></div>
+            <div class="relative z-10 text-center px-6 max-w-4xl">
+                <h1 class="text-5xl md:text-7xl font-bold mb-6">Lingkungan Terbangun Kota Denpasar</h1>
+                <p class="text-lg md:text-2xl mb-8">
+                    Dirancang, disusun, dan dikembangkan oleh<br>
+                    Khanza Oceanic Sydney Anataya Nugroho<br>
+                    21110123130056
+                </p>
+                <button id="exploreMapBtn" class="bg-white text-emerald-700 px-8 py-4 rounded-full font-bold shadow-xl hover:scale-105 transition">Peta Interaktif</button>
+            </div>
+        </section>
+
+        <section class="py-20 px-6 bg-white">
+            <div class="max-w-5xl mx-auto text-center">
+                <h2 class="text-4xl font-bold mb-8">Tentang WebGIS</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    WebGIS Lingkungan Terbangun Kota Denpasar ini merupakan platform pemetaan interaktif berbasis Sistem Informasi
+                    Geografis (SIG) yang dirancang untuk menampilkan persebaran berbagai fasilitas dan kawasan terbangun di Kota Denpasar.
+                    <br><br>
+                    Melalui integrasi PostgreSQL, PostGIS, GeoServer, dan Leaflet, website ini menyajikan visualisasi data
+                    spasial secara informatif dan interaktif, meliputi fasilitas pendidikan, rumah sakit, kawasan niaga,
+                    permukiman, sarana ibadah, dan cagar budaya.
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <!-- ========== HALAMAN PETA ========== -->
+    <div id="mapPage" class="page">
+        <div class="max-w-7xl mx-auto px-6 py-10">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 border-l-8 border-emerald-600 pl-4 mb-8">Peta Interaktif Denpasar</h2>
+            
+            <div class="bg-emerald-50 border-l-4 border-emerald-600 p-4 mb-6 rounded-r-xl text-sm">
+                💡 <span class="font-semibold">Tips:</span> Klik pada titik atau area peta untuk melihat informasi detail atribut
+            </div>
+
+            <div class="rounded-2xl overflow-hidden shadow-2xl mb-14">
+                <div id="map"></div>
+            </div>
+
+            <!-- Statistik -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Statistik Fasilitas & Kawasan Terbangun</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-blue-600">155</div><div>Pendidikan</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-red-500">28</div><div>Rumah Sakit</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-orange-500">17</div><div>Niaga</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-yellow-600">2.429</div><div>Permukiman</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-purple-600">296</div><div>Sarana Ibadah</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-gray-600">15</div><div>Cagar Budaya</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-amber-700">50</div><div>Pemerintahan</div></div>
+                    <div class="bg-white p-4 rounded-xl text-center shadow"><div class="text-2xl font-bold text-emerald-700">127.8</div><div>Luas (km²)</div></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md">
+                    <h4 class="font-semibold text-lg mb-4 text-gray-700">Grafik Sebaran Jumlah Fasilitas Publik</h4>
+                    <canvas id="statsChart" width="400" height="200" style="max-height: 350px; width:100%"></canvas>
+                </div>
+            </div>
+
+            <!-- Galeri -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Galeri Lingkungan Terbangun</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <img src="Sarana Ibadah.jpg" class="rounded-xl shadow-md h-32 w-full object-cover">
+                    <img src="Cagar Budaya.jpeg" class="rounded-xl shadow-md h-32 w-full object-cover">
+                    <img src="Niaga.jpg" class="rounded-xl shadow-md h-32 w-full object-cover">
+                    <img src="Pendidikan.jpg" class="rounded-xl shadow-md h-32 w-full object-cover">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== HALAMAN SUMBER DATA ========== -->
+    <div id="sourcePage" class="page">
+        <div class="max-w-7xl mx-auto px-6 py-10">
+            <div class="text-center mb-10">
+                <i class="fas fa-database text-5xl text-emerald-600 mb-3"></i>
+                <h2 class="text-4xl font-bold text-gray-800">Sumber Data</h2>
+            </div>
+
+            <!-- INFORMASI SUMBER DATA -->
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl mb-8">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-info-circle text-blue-600 text-xl mt-0.5"></i>
+                    <div>
+                        <p class="text-gray-700 leading-relaxed">
+                            <span class="font-semibold">Sumber Data Spasial:</span> Data spasial yang digunakan dalam WebGIS ini diambil dari website 
+                            <a href="https://tanahair.indonesia.go.id/portal-web/" target="_blank" class="text-blue-600 hover:underline">Ina-Geoportal</a> milik 
+                            <span class="font-semibold">Badan Informasi Geospasial (BIG)</span> dan beberapa telah diupdate oleh 
+                            <span class="font-semibold">Kelompok 1 Mata Kuliah Infrastruktur Data Spasial Kelas A 2026</span> yang mana saya merupakan salah satu anggotanya.
+                        </p>
                     </div>
-            `;
+                </div>
+            </div>
 
-            for (let key in properties) {
+            <div class="grid md:grid-cols-2 gap-6 mb-10">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-emerald-700"><i class="fas fa-map-marked-alt mr-2"></i> Data Spasial</h3>
+                    <table class="w-full text-sm">
+                        <tr class="border-b"><td class="py-2 font-semibold">Pendidikan</td><td>155 titik sekolah (SD, SMP, SMA/SMK, Perguruan Tinggi)</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Rumah Sakit</td><td>28 unit rumah sakit umum & swasta</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Niaga</td><td>17 kawasan pusat perbelanjaan & pasar</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Permukiman</td><td>2.429 area permukiman teridentifikasi</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Sarana Ibadah</td><td>296 unit tempat ibadah</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Cagar Budaya</td><td>15 bangunan bersejarah & situs budaya</td></tr>
+                        <tr class="border-b"><td class="py-2 font-semibold">Pemerintahan</td><td>50 kantor kecamatan, kelurahan, & instansi</td></tr>
+                    </table>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-xl font-bold mb-4 text-emerald-700"><i class="fas fa-microchip mr-2"></i> Alat</h3>
+                    <ul class="space-y-3">
+                        <li class="flex items-center gap-2"><i class="fas fa-database text-blue-600 w-6"></i> PostgreSQL + PostGIS</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-server text-orange-600 w-6"></i> GeoServer 2.24 (WMS Service)</li>
+                        <li class="flex items-center gap-2"><i class="fab fa-js text-yellow-500 w-6"></i> Leaflet.js, TailwindCSS, Chart.js</li>
+                        <li class="flex items-center gap-2"><i class="fas fa-globe text-green-600 w-6"></i> Basemap: OpenStreetMap & Google Satellite</li>
+                    </ul>
+                    <div>
+                    </div>
+                </div>
+            </div>
 
-                if (
-                    properties[key] !== null &&
-                    properties[key] !== undefined &&
-                    properties[key] !== ""
-                ) {
+            <div class="bg-gray-800 text-white rounded-2xl p-6 text-center">
+                <p class="text-sm">© 2026 WebGIS Lingkungan Terbangun Kota Denpasar</p>
+                <p class="text-sm mt-1">Khanza Oceanic Sydney Anataya Nugroho (21110123130056)</p>
+                <p class="text-xs text-gray-400 mt-2">Tugas Besar Sistem Informasi Geografis II</p>
+            </div>
+        </div>
+    </div>
 
-                    content += `
-                        <div style="
-                            margin-bottom:6px;
-                            padding-bottom:4px;
-                            border-bottom:1px solid #eee;
-                        ">
-                            <strong>${key}</strong><br>
-                            ${properties[key]}
-                        </div>
-                    `;
-                }
+    <!-- FOOTER -->
+    <footer class="bg-gray-900 text-white py-6 mt-10">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="text-center md:text-left">
+                <p class="font-medium">WebGIS Lingkungan Terbangun Kota Denpasar</p>
+                <p class="text-sm text-gray-400">Khanza Oceanic Sydney Anataya Nugroho | 21110123130056</p>
+            </div>
+            <div class="flex space-x-6">
+                <button id="footerHomeBtn" class="text-gray-300 hover:text-white transition">Home</button>
+                <button id="footerMapBtn" class="text-gray-300 hover:text-white transition">Peta</button>
+                <button id="footerSourceBtn" class="text-gray-300 hover:text-white transition">Sumber Data</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ==================== NAVIGASI 3 HALAMAN ====================
+        const homePage = document.getElementById('homePage');
+        const mapPage = document.getElementById('mapPage');
+        const sourcePage = document.getElementById('sourcePage');
+        
+        const navHome = document.getElementById('navHomeBtn');
+        const navMap = document.getElementById('navMapBtn');
+        const navSource = document.getElementById('navSourceBtn');
+        
+        const footerHome = document.getElementById('footerHomeBtn');
+        const footerMap = document.getElementById('footerMapBtn');
+        const footerSource = document.getElementById('footerSourceBtn');
+        const exploreBtn = document.getElementById('exploreMapBtn');
+
+        function setActiveButton(active) {
+            [navHome, navMap, navSource].forEach(btn => {
+                btn.classList.remove('bg-emerald-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            if (active) {
+                active.classList.remove('bg-gray-200', 'text-gray-700');
+                active.classList.add('bg-emerald-600', 'text-white');
             }
-
-            content += `</div>`;
-
-            return content;
         }
 
-        // ==================== LOAD GEOJSON ====================
+        function showHome() {
+            homePage.classList.add('active');
+            mapPage.classList.remove('active');
+            sourcePage.classList.remove('active');
+            setActiveButton(navHome);
+        }
 
-        async function loadGeoJSON(file, color, isPolygon = false) {
+        function showMap() {
+            homePage.classList.remove('active');
+            mapPage.classList.add('active');
+            sourcePage.classList.remove('active');
+            setActiveButton(navMap);
+            setTimeout(() => {
+                if (window.mapInstance) window.mapInstance.invalidateSize();
+                if (!window.mapInited) initMap();
+                if (!window.chartInited) initChart();
+            }, 100);
+        }
 
-            try {
+        function showSource() {
+            homePage.classList.remove('active');
+            mapPage.classList.remove('active');
+            sourcePage.classList.add('active');
+            setActiveButton(navSource);
+        }
 
-                const response = await fetch(file);
+        navHome.addEventListener('click', showHome);
+        navMap.addEventListener('click', showMap);
+        navSource.addEventListener('click', showSource);
+        footerHome.addEventListener('click', showHome);
+        footerMap.addEventListener('click', showMap);
+        footerSource.addEventListener('click', showSource);
+        if (exploreBtn) exploreBtn.addEventListener('click', showMap);
 
-                if (!response.ok) {
-                    throw new Error(`File tidak ditemukan: ${file}`);
+        // ==================== INISIALISASI MAP ====================
+        let mapInited = false;
+        let chartInited = false;
+
+        function initMap() {
+            if (mapInited) return;
+
+            const map = L.map('map').setView([-8.6705, 115.2126], 11);
+            window.mapInstance = map;
+
+            // BASEMAP
+            const osm = L.tileLayer(
+                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                { attribution: '© OpenStreetMap' }
+            ).addTo(map);
+
+            const satellite = L.tileLayer(
+                'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+                { attribution: '© Google Satellite' }
+            );
+
+            // ==================== STYLE GEOJSON ====================
+            function pointStyle(color) {
+                return {
+                    radius: 6,
+                    fillColor: color,
+                    color: "#ffffff",
+                    weight: 1,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                };
+            }
+
+            function polygonStyle(color) {
+                return {
+                    color: color,
+                    fillColor: color,
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.5
+                };
+            }
+
+            // ==================== POPUP ATRIBUT ====================
+            function popupContent(properties) {
+                let content = `
+                    <div style="font-family:DM Sans;min-width:200px;">
+                        <div style="background:#059669;color:white;padding:8px;border-radius:8px 8px 0 0;margin:-12px -12px 10px -12px;">
+                            <strong>📌 Informasi</strong>
+                        </div>`;
+
+                for (let key in properties) {
+                    // Lewati atribut kosong atau bertipe objek (misalnya geometry nested)
+                    if (properties[key] !== null && properties[key] !== '' && typeof properties[key] !== 'object') {
+                        content += `
+                            <div style="margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee;">
+                                <strong>${key}:</strong> ${properties[key]}
+                            </div>`;
+                    }
                 }
 
+                content += `</div>`;
+                return content;
+            }
+
+            // ==================== LOAD GEOJSON ====================
+            async function loadGeoJSON(file, color) {
+                const response = await fetch(file);
                 const data = await response.json();
 
-                const layer = L.geoJSON(data, {
+                return L.geoJSON(data, {
 
-                    style: function () {
-
-                        if (isPolygon) {
+                    style: function (feature) {
+                        if (
+                            feature.geometry.type === "Polygon" ||
+                            feature.geometry.type === "MultiPolygon"
+                        ) {
                             return polygonStyle(color);
                         }
                     },
 
-                    pointToLayer: function(feature, latlng) {
-
-                        return L.circleMarker(
-                            latlng,
-                            pointStyle(color)
-                        );
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, pointStyle(color));
                     },
 
-                    onEachFeature: function(feature, layer) {
-
+                    onEachFeature: function (feature, layer) {
                         if (feature.properties) {
-
                             layer.bindPopup(
                                 popupContent(feature.properties),
-                                {
-                                    className: 'custom-popup'
-                                }
+                                { className: 'custom-popup', maxWidth: 350 }
                             );
                         }
                     }
+
                 });
-
-                return layer;
-
-            } catch (error) {
-
-                console.error('GAGAL LOAD:', file);
-                console.error(error);
-
-                alert('Gagal memuat file: ' + file);
-
-                return L.layerGroup();
             }
-        }
 
-        // ==================== LOAD SEMUA LAYER ====================
+            // ==================== MUAT SEMUA LAYER ====================
+            Promise.all([
+                loadGeoJSON('pendidikan.geojson',   '#3b82f6'),
+                loadGeoJSON('rumahsakit.geojson',   '#ef4444'),
+                loadGeoJSON('niaga.geojson',         '#f97316'),
+                loadGeoJSON('permukiman.geojson',    '#eab308'),
+                loadGeoJSON('saranaibadah.geojson',  '#a855f7'),
+                loadGeoJSON('cagarbudaya.geojson',   '#6b7280'),
+                loadGeoJSON('pemerintahan.geojson',  '#b8860b')
+            ]).then(([pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
 
-        Promise.all([
+                // Layer pendidikan tampil by default
+                pendidikan.addTo(map);
 
-            loadGeoJSON('pendidikan.geojson', '#3b82f6'),
-            loadGeoJSON('rumahsakit.geojson', '#ef4444'),
-            loadGeoJSON('niaga.geojson', '#f97316'),
-            loadGeoJSON('permukiman.geojson', '#eab308', true),
-            loadGeoJSON('saranaibadah.geojson', '#a855f7'),
-            loadGeoJSON('cagarbudaya.geojson', '#6b7280'),
-            loadGeoJSON('pemerintahan.geojson', '#b8860b')
+                const overlayMaps = {
+                    "Pendidikan":    pendidikan,
+                    "Rumah Sakit":   rumahsakit,
+                    "Niaga":         niaga,
+                    "Permukiman":    permukiman,
+                    "Sarana Ibadah": ibadah,
+                    "Cagar Budaya":  cagarbudaya,
+                    "Pemerintahan":  pemerintahan
+                };
 
-        ]).then(([
+                L.control.layers(
+                    { "OpenStreetMap": osm, "Google Satellite": satellite },
+                    overlayMaps
+                ).addTo(map);
 
-            pendidikan,
-            rs,
-            niaga,
-            permukiman,
-            ibadah,
-            budaya,
-            pemerintahan
+            }).catch(err => {
+                console.error('Gagal memuat GeoJSON:', err);
+            });
 
-        ]) => {
+            // ==================== LEGENDA ====================
+            const legend = L.control({ position: 'bottomleft' });
 
-            pendidikan.addTo(map);
+            legend.onAdd = function () {
+                const div = L.DomUtil.create('div');
+                div.innerHTML = `
+                    <div style="
+                        background:white;
+                        padding:12px 15px;
+                        border-radius:10px;
+                        box-shadow:0 0 15px rgba(0,0,0,0.2);
+                        font-size:12px;
+                        min-width:170px;
+                    ">
+                        <h4 style="
+                            margin:0 0 10px 0;
+                            font-weight:bold;
+                            border-bottom:2px solid #059669;
+                            padding-bottom:5px;
+                        ">Legenda</h4>
 
-            const overlayMaps = {
-
-                "Pendidikan": pendidikan,
-                "Rumah Sakit": rs,
-                "Niaga": niaga,
-                "Permukiman": permukiman,
-                "Sarana Ibadah": ibadah,
-                "Cagar Budaya": budaya,
-                "Pemerintahan": pemerintahan
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:8px;"></span>
+                            Pendidikan
+                        </div>
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;margin-right:8px;"></span>
+                            Rumah Sakit
+                        </div>
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:8px;"></span>
+                            Niaga
+                        </div>
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#eab308;border-radius:50%;margin-right:8px;"></span>
+                            Permukiman
+                        </div>
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#a855f7;border-radius:50%;margin-right:8px;"></span>
+                            Sarana Ibadah
+                        </div>
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:12px;height:12px;background:#6b7280;border-radius:50%;margin-right:8px;"></span>
+                            Cagar Budaya
+                        </div>
+                        <div>
+                            <span style="display:inline-block;width:12px;height:12px;background:#b8860b;border-radius:50%;margin-right:8px;"></span>
+                            Pemerintahan
+                        </div>
+                    </div>`;
+                return div;
             };
 
-            L.control.layers(
+            legend.addTo(map);
+            mapInited = true;
+        }
 
-                {
-                    "OpenStreetMap": osm,
-                    "Google Satellite": satellite
+        // ==================== DIAGRAM BATANG ====================
+        function initChart() {
+            if (chartInited) return;
+            const ctx = document.getElementById('statsChart')?.getContext('2d');
+            if (!ctx) return;
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Pendidikan', 'Rumah Sakit', 'Niaga', 'Permukiman', 'Sarana Ibadah', 'Cagar Budaya', 'Pemerintahan'],
+                    datasets: [{
+                        label: 'Jumlah Fasilitas / Kawasan',
+                        data: [155, 28, 17, 2429, 296, 15, 50],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#ef4444',
+                            '#f97316',
+                            '#eab308',
+                            '#a855f7',
+                            '#6b7280',
+                            '#b8860b'
+                        ],
+                        borderRadius: 8,
+                        borderWidth: 0
+                    }]
                 },
-
-                overlayMaps
-
-            ).addTo(map);
-
-        });
-
-        // ==================== LEGENDA ====================
-
-        const legend = L.control({
-            position: 'bottomleft'
-        });
-
-        legend.onAdd = function () {
-
-            const div = L.DomUtil.create('div');
-
-            div.innerHTML = `
-                <div style="
-                    background:white;
-                    padding:12px 15px;
-                    border-radius:10px;
-                    box-shadow:0 0 15px rgba(0,0,0,0.2);
-                    font-size:12px;
-                    min-width:170px;
-                ">
-
-                    <h4 style="
-                        margin:0 0 10px 0;
-                        font-weight:bold;
-                        border-bottom:2px solid #059669;
-                        padding-bottom:5px;
-                    ">
-                        Legenda
-                    </h4>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#3b82f6;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Pendidikan
-                    </div>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#ef4444;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Rumah Sakit
-                    </div>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#f97316;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Niaga
-                    </div>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#eab308;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Permukiman
-                    </div>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#a855f7;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Sarana Ibadah
-                    </div>
-
-                    <div style="margin-bottom:6px;">
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#6b7280;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Cagar Budaya
-                    </div>
-
-                    <div>
-                        <span style="
-                            display:inline-block;
-                            width:12px;
-                            height:12px;
-                            background:#b8860b;
-                            border-radius:50%;
-                            margin-right:8px;
-                        "></span>
-                        Pemerintahan
-                    </div>
-
-                </div>
-            `;
-
-            return div;
-        };
-
-        legend.addTo(map);
-
-        mapInited = true;
-    }
-
-    // ==================== CHART ====================
-
-    function initChart() {
-
-        if (chartInited) return;
-
-        const ctx = document.getElementById('statsChart').getContext('2d');
-
-        new Chart(ctx, {
-
-            type: 'bar',
-
-            data: {
-
-                labels: [
-                    'Pendidikan',
-                    'Rumah Sakit',
-                    'Niaga',
-                    'Permukiman',
-                    'Sarana Ibadah',
-                    'Cagar Budaya',
-                    'Pemerintahan'
-                ],
-
-                datasets: [{
-
-                    label: 'Jumlah',
-
-                    data: [
-                        155,
-                        28,
-                        17,
-                        2429,
-                        296,
-                        15,
-                        50
-                    ],
-
-                    backgroundColor: [
-                        '#3b82f6',
-                        '#ef4444',
-                        '#f97316',
-                        '#eab308',
-                        '#a855f7',
-                        '#6b7280',
-                        '#b8860b'
-                    ],
-
-                    borderRadius: 8
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: true,
-
-                plugins: {
-                    legend: {
-                        position: 'top'
-                    }
-                },
-
-                scales: {
-
-                    y: {
-                        beginAtZero: true
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { 
+                            position: 'top',
+                            labels: { font: { size: 12 } }
+                        },
+                        tooltip: { 
+                            callbacks: { 
+                                label: function(context) {
+                                    let value = context.raw;
+                                    if (value >= 1000) {
+                                        return context.dataset.label + ': ' + (value / 1000).toFixed(1) + ' ribu unit';
+                                    }
+                                    return context.dataset.label + ': ' + value + ' unit';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: '#e5e7eb' }, 
+                            title: { display: true, text: 'Jumlah', font: { weight: 'bold' } },
+                            ticks: {
+                                callback: function(value) {
+                                    if (value >= 1000) return (value / 1000) + 'K';
+                                    return value;
+                                }
+                            }
+                        },
+                        x: { 
+                            title: { display: true, text: 'Jenis Sarana / Kawasan', font: { weight: 'bold' } },
+                            ticks: { rotation: 0, autoSkip: true }
+                        }
                     }
                 }
-            }
-        });
+            });
+            chartInited = true;
+        }
+    </script>
 
-        chartInited = true;
-    }
-</script>
+</body>
+
+</html>
