@@ -25,51 +25,16 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <style>
-        body {
-            font-family: 'DM Sans', sans-serif;
-            margin: 0;
-            background: #f9fafb;
-            scroll-behavior: smooth;
-        }
-
-        #map {
-            width: 100%;
-            height: 600px;
-            border-radius: 20px;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2);
-        }
-
-        .hero-bg {
-            background: linear-gradient(135deg, rgba(6,95,70,0.85), rgba(14,116,144,0.85));
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .stat-card {
-            transition: all 0.2s ease;
-        }
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .gallery-img {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        .gallery-img:hover {
-            transform: scale(1.02);
-            box-shadow: 0 20px 30px -15px rgba(0,0,0,0.3);
-        }
-
-        .custom-popup .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            border-left: 5px solid #059669;
-        }
+        body { font-family: 'DM Sans', sans-serif; margin: 0; background: #f9fafb; scroll-behavior: smooth; }
+        #map { width: 100%; height: 600px; border-radius: 20px; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2); }
+        .hero-bg { background: linear-gradient(135deg, rgba(6,95,70,0.85), rgba(14,116,144,0.85)); }
+        .page { display: none; }
+        .page.active { display: block; }
+        .stat-card { transition: all 0.2s ease; }
+        .stat-card:hover { transform: translateY(-5px); }
+        .gallery-img { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .gallery-img:hover { transform: scale(1.02); box-shadow: 0 20px 30px -15px rgba(0,0,0,0.3); }
+        .custom-popup .leaflet-popup-content-wrapper { border-radius: 12px; border-left: 5px solid #059669; }
     </style>
 
 </head>
@@ -90,7 +55,7 @@
         </div>
     </header>
 
-    <!-- ========== HALAMAN HOME ========== -->
+    <!-- HOME -->
     <div id="homePage" class="page active">
         <section class="relative h-[85vh] flex items-center justify-center text-white">
             <img src="Denpasar.jpg" alt="Denpasar" class="absolute inset-0 w-full h-full object-cover">
@@ -105,7 +70,6 @@
                 <button id="exploreMapBtn" class="bg-white text-emerald-700 px-8 py-4 rounded-full font-bold shadow-xl hover:scale-105 transition">Peta Interaktif</button>
             </div>
         </section>
-
         <section class="py-20 px-6 bg-white">
             <div class="max-w-5xl mx-auto text-center">
                 <h2 class="text-4xl font-bold mb-8">Tentang WebGIS</h2>
@@ -121,20 +85,16 @@
         </section>
     </div>
 
-    <!-- ========== HALAMAN PETA ========== -->
+    <!-- PETA -->
     <div id="mapPage" class="page">
         <div class="max-w-7xl mx-auto px-6 py-10">
             <h2 class="text-3xl md:text-4xl font-bold text-gray-800 border-l-8 border-emerald-600 pl-4 mb-8">Peta Interaktif Denpasar</h2>
-            
             <div class="bg-emerald-50 border-l-4 border-emerald-600 p-4 mb-6 rounded-r-xl text-sm">
                 💡 <span class="font-semibold">Tips:</span> Klik pada titik atau area peta untuk melihat informasi detail atribut
             </div>
-
             <div class="rounded-2xl overflow-hidden shadow-2xl mb-14">
                 <div id="map"></div>
             </div>
-
-            <!-- Statistik -->
             <div class="mb-16">
                 <h3 class="text-2xl font-bold text-gray-800 mb-6">Statistik Fasilitas & Kawasan Terbangun</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -152,8 +112,6 @@
                     <canvas id="statsChart" width="400" height="200" style="max-height: 350px; width:100%"></canvas>
                 </div>
             </div>
-
-            <!-- Galeri -->
             <div class="mt-12">
                 <h3 class="text-2xl font-bold text-gray-800 mb-6">Galeri Lingkungan Terbangun</h3>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -166,15 +124,13 @@
         </div>
     </div>
 
-    <!-- ========== HALAMAN SUMBER DATA ========== -->
+    <!-- SUMBER DATA -->
     <div id="sourcePage" class="page">
         <div class="max-w-7xl mx-auto px-6 py-10">
             <div class="text-center mb-10">
                 <i class="fas fa-database text-5xl text-emerald-600 mb-3"></i>
                 <h2 class="text-4xl font-bold text-gray-800">Sumber Data</h2>
             </div>
-
-            <!-- INFORMASI SUMBER DATA -->
             <div class="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl mb-8">
                 <div class="flex items-start gap-3">
                     <i class="fas fa-info-circle text-blue-600 text-xl mt-0.5"></i>
@@ -188,7 +144,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="grid md:grid-cols-2 gap-6 mb-10">
                 <div class="bg-white rounded-2xl shadow-lg p-6">
                     <h3 class="text-xl font-bold mb-4 text-emerald-700"><i class="fas fa-map-marked-alt mr-2"></i> Data Spasial</h3>
@@ -210,11 +165,8 @@
                         <li class="flex items-center gap-2"><i class="fab fa-js text-yellow-500 w-6"></i> Leaflet.js, TailwindCSS, Chart.js</li>
                         <li class="flex items-center gap-2"><i class="fas fa-globe text-green-600 w-6"></i> Basemap: OpenStreetMap & Google Satellite</li>
                     </ul>
-                    <div>
-                    </div>
                 </div>
             </div>
-
             <div class="bg-gray-800 text-white rounded-2xl p-6 text-center">
                 <p class="text-sm">© 2026 WebGIS Lingkungan Terbangun Kota Denpasar</p>
                 <p class="text-sm mt-1">Khanza Oceanic Sydney Anataya Nugroho (21110123130056)</p>
@@ -239,19 +191,17 @@
     </footer>
 
     <script>
-        // ==================== NAVIGASI 3 HALAMAN ====================
+        // ==================== NAVIGASI ====================
         const homePage = document.getElementById('homePage');
-        const mapPage = document.getElementById('mapPage');
+        const mapPage  = document.getElementById('mapPage');
         const sourcePage = document.getElementById('sourcePage');
-        
-        const navHome = document.getElementById('navHomeBtn');
-        const navMap = document.getElementById('navMapBtn');
+        const navHome   = document.getElementById('navHomeBtn');
+        const navMap    = document.getElementById('navMapBtn');
         const navSource = document.getElementById('navSourceBtn');
-        
-        const footerHome = document.getElementById('footerHomeBtn');
-        const footerMap = document.getElementById('footerMapBtn');
+        const footerHome   = document.getElementById('footerHomeBtn');
+        const footerMap    = document.getElementById('footerMapBtn');
         const footerSource = document.getElementById('footerSourceBtn');
-        const exploreBtn = document.getElementById('exploreMapBtn');
+        const exploreBtn   = document.getElementById('exploreMapBtn');
 
         function setActiveButton(active) {
             [navHome, navMap, navSource].forEach(btn => {
@@ -270,7 +220,6 @@
             sourcePage.classList.remove('active');
             setActiveButton(navHome);
         }
-
         function showMap() {
             homePage.classList.remove('active');
             mapPage.classList.add('active');
@@ -282,7 +231,6 @@
                 if (!window.chartInited) initChart();
             }, 100);
         }
-
         function showSource() {
             homePage.classList.remove('active');
             mapPage.classList.remove('active');
@@ -298,8 +246,8 @@
         footerSource.addEventListener('click', showSource);
         if (exploreBtn) exploreBtn.addEventListener('click', showMap);
 
-        // ==================== INISIALISASI MAP ====================
-        let mapInited = false;
+        // ==================== MAP ====================
+        let mapInited   = false;
         let chartInited = false;
 
         function initMap() {
@@ -308,236 +256,106 @@
             const map = L.map('map').setView([-8.6705, 115.2126], 11);
             window.mapInstance = map;
 
-            // BASEMAP
-            const osm = L.tileLayer(
-                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                { attribution: '© OpenStreetMap' }
-            ).addTo(map);
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+            const satellite = L.tileLayer('https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', { attribution: '© Google Satellite' });
 
-            const satellite = L.tileLayer(
-                'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
-                { attribution: '© Google Satellite' }
-            );
-
-            // ==================== STYLE GEOJSON ====================
             function pointStyle(color) {
-                return {
-                    radius: 6,
-                    fillColor: color,
-                    color: "#ffffff",
-                    weight: 1,
-                    opacity: 1,
-                    fillOpacity: 0.9
-                };
+                return { radius: 6, fillColor: color, color: '#fff', weight: 1, opacity: 1, fillOpacity: 0.9 };
             }
-
             function polygonStyle(color) {
-                return {
-                    color: color,
-                    fillColor: color,
-                    weight: 2,
-                    opacity: 1,
-                    fillOpacity: 0.5
-                };
+                return { color: color, fillColor: color, weight: 2, opacity: 1, fillOpacity: 0.5 };
             }
 
-            // ==================== POPUP ATRIBUT ====================
-            function popupContent(properties) {
-                let content = `
-                    <div style="font-family:DM Sans;min-width:200px;">
-                        <div style="background:#059669;color:white;padding:8px;border-radius:8px 8px 0 0;margin:-12px -12px 10px -12px;">
-                            <strong>📌 Informasi</strong>
-                        </div>`;
-
-                for (let key in properties) {
-                    // Lewati atribut kosong atau bertipe objek (misalnya geometry nested)
-                    if (properties[key] !== null && properties[key] !== '' && typeof properties[key] !== 'object') {
-                        content += `
-                            <div style="margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee;">
-                                <strong>${key}:</strong> ${properties[key]}
-                            </div>`;
+            function popupContent(props) {
+                let html = '<div style="font-family:DM Sans;min-width:200px;">'
+                         + '<div style="background:#059669;color:white;padding:8px;border-radius:8px 8px 0 0;margin:-12px -12px 10px -12px;"><strong>📌 Informasi</strong></div>';
+                for (let k in props) {
+                    if (props[k] !== null && props[k] !== '' && typeof props[k] !== 'object') {
+                        html += '<div style="margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #eee;"><strong>' + k + ':</strong> ' + props[k] + '</div>';
                     }
                 }
-
-                content += `</div>`;
-                return content;
+                return html + '</div>';
             }
 
-            // ==================== LOAD GEOJSON (dengan popup) ====================
-            async function loadGeoJSON(file, color) {
-                const response = await fetch(file);
-                const text = await response.text();
-
-                // Handle format GeoJSON Lines (tiap baris = 1 Feature)
-                // maupun FeatureCollection biasa
-                let data;
-                const trimmed = text.trim();
-                if (trimmed.startsWith('{') && trimmed.includes('\n')) {
-                    // Kemungkinan NDJSON — parse per baris lalu bungkus jadi FeatureCollection
-                    const features = trimmed.split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0)
-                        .map(line => JSON.parse(line));
-                    data = { type: 'FeatureCollection', features: features };
-                } else {
-                    data = JSON.parse(trimmed);
-                }
-
+            // ==================== LOAD GEOJSON ====================
+            // Langsung pakai response.json() — file sudah FeatureCollection valid
+            async function loadGeoJSON(url, color) {
+                const res  = await fetch(url);
+                const data = await res.json();
                 return L.geoJSON(data, {
-
-                    style: function (feature) {
-                        if (
-                            feature.geometry.type === "Polygon" ||
-                            feature.geometry.type === "MultiPolygon"
-                        ) {
+                    style: function(f) {
+                        if (f.geometry.type === 'Polygon' || f.geometry.type === 'MultiPolygon')
                             return polygonStyle(color);
-                        }
                     },
-
-                    pointToLayer: function (feature, latlng) {
+                    pointToLayer: function(f, latlng) {
                         return L.circleMarker(latlng, pointStyle(color));
                     },
-
-                    onEachFeature: function (feature, layer) {
-                        if (feature.properties) {
-                            const content = popupContent(feature.properties);
-                            layer.bindPopup(content, { className: 'custom-popup', maxWidth: 350 });
-                            layer.on('click', function (e) {
-                                L.DomEvent.stopPropagation(e);
-                                layer.openPopup();
-                            });
+                    onEachFeature: function(f, layer) {
+                        if (f.properties) {
+                            layer.bindPopup(popupContent(f.properties), { className: 'custom-popup', maxWidth: 350 });
                         }
                     }
-
                 });
             }
 
-            // ==================== LOAD AOI (tanpa popup, hanya outline) ====================
-            async function loadAOI(file) {
-                const response = await fetch(file);
-                const text = await response.text();
-                const trimmed = text.trim();
-                let data;
-                if (trimmed.startsWith('{') && trimmed.includes('\n')) {
-                    const features = trimmed.split('\n')
-                        .map(line => line.trim())
-                        .filter(line => line.length > 0)
-                        .map(line => JSON.parse(line));
-                    data = { type: 'FeatureCollection', features: features };
-                } else {
-                    data = JSON.parse(trimmed);
-                }
+            async function loadAOI(url) {
+                const res  = await fetch(url);
+                const data = await res.json();
                 return L.geoJSON(data, {
-                    style: {
-                        color: '#059669',
-                        fillColor: '#059669',
-                        weight: 3,
-                        opacity: 1,
-                        fillOpacity: 0.08,
-                        dashArray: '6,4'
-                    }
+                    style: { color: '#059669', fillColor: '#059669', weight: 3, opacity: 1, fillOpacity: 0.08, dashArray: '6,4' }
                 });
             }
 
-            // ==================== MUAT SEMUA LAYER ====================
+            // ==================== MUAT LAYER ====================
             const RAW = 'https://raw.githubusercontent.com/khanzaoceanicsydney/sigwebgis/main/';
             Promise.all([
                 loadAOI(RAW + 'denpasar.geojson'),
-                loadGeoJSON(RAW + 'pendidikan.geojson',   '#3b82f6'),
-                loadGeoJSON(RAW + 'rumahsakit.geojson',   '#ef4444'),
-                loadGeoJSON(RAW + 'niaga.geojson',         '#f97316'),
-                loadGeoJSON(RAW + 'permukiman.geojson',    '#eab308'),
-                loadGeoJSON(RAW + 'saranaibadah.geojson',  '#a855f7'),
-                loadGeoJSON(RAW + 'cagarbudaya.geojson',   '#6b7280'),
-                loadGeoJSON(RAW + 'pemerintahan.geojson',  '#b8860b')
+                loadGeoJSON(RAW + 'pendidikan.geojson',  '#3b82f6'),
+                loadGeoJSON(RAW + 'rumahsakit.geojson',  '#ef4444'),
+                loadGeoJSON(RAW + 'niaga.geojson',        '#f97316'),
+                loadGeoJSON(RAW + 'permukiman.geojson',   '#eab308'),
+                loadGeoJSON(RAW + 'saranaibadah.geojson', '#a855f7'),
+                loadGeoJSON(RAW + 'cagarbudaya.geojson',  '#6b7280'),
+                loadGeoJSON(RAW + 'pemerintahan.geojson', '#b8860b')
             ]).then(([denpasar, pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
-
-                // AOI & pendidikan tampil by default
                 denpasar.addTo(map);
                 pendidikan.addTo(map);
-
                 const overlayMaps = {
-                    "Kota Denpasar": denpasar,
-                    "Pendidikan":    pendidikan,
-                    "Rumah Sakit":   rumahsakit,
-                    "Niaga":         niaga,
-                    "Permukiman":    permukiman,
-                    "Sarana Ibadah": ibadah,
-                    "Cagar Budaya":  cagarbudaya,
-                    "Pemerintahan":  pemerintahan
+                    'Kota Denpasar': denpasar,
+                    'Pendidikan':    pendidikan,
+                    'Rumah Sakit':   rumahsakit,
+                    'Niaga':         niaga,
+                    'Permukiman':    permukiman,
+                    'Sarana Ibadah': ibadah,
+                    'Cagar Budaya':  cagarbudaya,
+                    'Pemerintahan':  pemerintahan
                 };
-
-                L.control.layers(
-                    { "OpenStreetMap": osm, "Google Satellite": satellite },
-                    overlayMaps
-                ).addTo(map);
-
-            }).catch(err => {
-                console.error('Gagal memuat GeoJSON:', err);
-            });
+                L.control.layers({ 'OpenStreetMap': osm, 'Google Satellite': satellite }, overlayMaps).addTo(map);
+            }).catch(err => console.error('Gagal memuat GeoJSON:', err));
 
             // ==================== LEGENDA ====================
             const legend = L.control({ position: 'bottomleft' });
-
-            legend.onAdd = function () {
+            legend.onAdd = function() {
                 const div = L.DomUtil.create('div');
-                div.innerHTML = `
-                    <div style="
-                        background:white;
-                        padding:12px 15px;
-                        border-radius:10px;
-                        box-shadow:0 0 15px rgba(0,0,0,0.2);
-                        font-size:12px;
-                        min-width:170px;
-                    ">
-                        <h4 style="
-                            margin:0 0 10px 0;
-                            font-weight:bold;
-                            border-bottom:2px solid #059669;
-                            padding-bottom:5px;
-                        ">Legenda</h4>
-
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:18px;height:3px;background:#059669;border-top:2px dashed #059669;margin-right:8px;vertical-align:middle;"></span>
-                            Kota Denpasar
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:8px;"></span>
-                            Pendidikan
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;margin-right:8px;"></span>
-                            Rumah Sakit
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:8px;"></span>
-                            Niaga
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#eab308;border-radius:50%;margin-right:8px;"></span>
-                            Permukiman
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#a855f7;border-radius:50%;margin-right:8px;"></span>
-                            Sarana Ibadah
-                        </div>
-                        <div style="margin-bottom:6px;">
-                            <span style="display:inline-block;width:12px;height:12px;background:#6b7280;border-radius:50%;margin-right:8px;"></span>
-                            Cagar Budaya
-                        </div>
-                        <div>
-                            <span style="display:inline-block;width:12px;height:12px;background:#b8860b;border-radius:50%;margin-right:8px;"></span>
-                            Pemerintahan
-                        </div>
-                    </div>`;
+                div.innerHTML =
+                    '<div style="background:white;padding:12px 15px;border-radius:10px;box-shadow:0 0 15px rgba(0,0,0,0.2);font-size:12px;min-width:170px;">' +
+                    '<h4 style="margin:0 0 10px 0;font-weight:bold;border-bottom:2px solid #059669;padding-bottom:5px;">Legenda</h4>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:18px;height:3px;background:#059669;border-top:2px dashed #059669;margin-right:8px;vertical-align:middle;"></span>Kota Denpasar</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:8px;"></span>Pendidikan</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:50%;margin-right:8px;"></span>Rumah Sakit</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#f97316;border-radius:50%;margin-right:8px;"></span>Niaga</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#eab308;border-radius:50%;margin-right:8px;"></span>Permukiman</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#a855f7;border-radius:50%;margin-right:8px;"></span>Sarana Ibadah</div>' +
+                    '<div style="margin-bottom:6px;"><span style="display:inline-block;width:12px;height:12px;background:#6b7280;border-radius:50%;margin-right:8px;"></span>Cagar Budaya</div>' +
+                    '<div><span style="display:inline-block;width:12px;height:12px;background:#b8860b;border-radius:50%;margin-right:8px;"></span>Pemerintahan</div>' +
+                    '</div>';
                 return div;
             };
-
             legend.addTo(map);
             mapInited = true;
         }
 
-        // ==================== DIAGRAM BATANG ====================
+        // ==================== CHART ====================
         function initChart() {
             if (chartInited) return;
             const ctx = document.getElementById('statsChart')?.getContext('2d');
@@ -545,59 +363,29 @@
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Pendidikan', 'Rumah Sakit', 'Niaga', 'Permukiman', 'Sarana Ibadah', 'Cagar Budaya', 'Pemerintahan'],
+                    labels: ['Pendidikan','Rumah Sakit','Niaga','Permukiman','Sarana Ibadah','Cagar Budaya','Pemerintahan'],
                     datasets: [{
                         label: 'Jumlah Fasilitas / Kawasan',
                         data: [155, 28, 17, 2429, 296, 15, 50],
-                        backgroundColor: [
-                            '#3b82f6',
-                            '#ef4444',
-                            '#f97316',
-                            '#eab308',
-                            '#a855f7',
-                            '#6b7280',
-                            '#b8860b'
-                        ],
-                        borderRadius: 8,
-                        borderWidth: 0
+                        backgroundColor: ['#3b82f6','#ef4444','#f97316','#eab308','#a855f7','#6b7280','#b8860b'],
+                        borderRadius: 8, borderWidth: 0
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
+                    responsive: true, maintainAspectRatio: true,
                     plugins: {
-                        legend: { 
-                            position: 'top',
-                            labels: { font: { size: 12 } }
-                        },
-                        tooltip: { 
-                            callbacks: { 
-                                label: function(context) {
-                                    let value = context.raw;
-                                    if (value >= 1000) {
-                                        return context.dataset.label + ': ' + (value / 1000).toFixed(1) + ' ribu unit';
-                                    }
-                                    return context.dataset.label + ': ' + value + ' unit';
-                                }
-                            }
-                        }
+                        legend: { position: 'top', labels: { font: { size: 12 } } },
+                        tooltip: { callbacks: { label: function(c) {
+                            let v = c.raw;
+                            return c.dataset.label + ': ' + (v >= 1000 ? (v/1000).toFixed(1)+' ribu unit' : v+' unit');
+                        }}}
                     },
                     scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: '#e5e7eb' }, 
-                            title: { display: true, text: 'Jumlah', font: { weight: 'bold' } },
-                            ticks: {
-                                callback: function(value) {
-                                    if (value >= 1000) return (value / 1000) + 'K';
-                                    return value;
-                                }
-                            }
-                        },
-                        x: { 
-                            title: { display: true, text: 'Jenis Sarana / Kawasan', font: { weight: 'bold' } },
-                            ticks: { rotation: 0, autoSkip: true }
-                        }
+                        y: { beginAtZero: true, grid: { color: '#e5e7eb' },
+                             title: { display: true, text: 'Jumlah', font: { weight: 'bold' } },
+                             ticks: { callback: v => v >= 1000 ? (v/1000)+'K' : v }},
+                        x: { title: { display: true, text: 'Jenis Sarana / Kawasan', font: { weight: 'bold' } },
+                             ticks: { rotation: 0, autoSkip: true }}
                     }
                 }
             });
@@ -606,5 +394,4 @@
     </script>
 
 </body>
-
 </html>
