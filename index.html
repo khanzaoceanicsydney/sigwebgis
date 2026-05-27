@@ -302,6 +302,9 @@
         let mapInited = false;
         let chartInited = false;
 
+        // Base URL raw GitHub untuk akses file GeoJSON
+        const RAW = 'https://raw.githubusercontent.com/khanzaoceanicsydney/sigwebgis/main/';
+
         function initMap() {
             if (mapInited) return;
 
@@ -441,14 +444,14 @@
 
             // ==================== MUAT SEMUA LAYER ====================
             Promise.all([
-                loadAOI('denpasar.geojson'),
-                loadGeoJSON('pendidikan.geojsons.json',   '#3b82f6'),
-                loadGeoJSON('rumahsakit.geojsons.json',   '#ef4444'),
-                loadGeoJSON('niaga.geojsons.json',        '#f97316'),
-                loadGeoJSON('permukiman.geojsons.json',   '#eab308'),
-                loadGeoJSON('saranaibadah.geojsons.json', '#a855f7'),
-                loadGeoJSON('cagarbudaya.geojsons.json',  '#6b7280'),
-                loadGeoJSON('pemerintahan.geojsons.json', '#b8860b')
+                loadAOI(RAW + 'denpasar.geojson'),
+                loadGeoJSON(RAW + 'pendidikan.geojson',   '#3b82f6'),
+                loadGeoJSON(RAW + 'rumahsakit.geojson',   '#ef4444'),
+                loadGeoJSON(RAW + 'niaga.geojson',         '#f97316'),
+                loadGeoJSON(RAW + 'permukiman.geojson',    '#eab308'),
+                loadGeoJSON(RAW + 'saranaibadah.geojson',  '#a855f7'),
+                loadGeoJSON(RAW + 'cagarbudaya.geojson',   '#6b7280'),
+                loadGeoJSON(RAW + 'pemerintahan.geojson',  '#b8860b')
             ]).then(([denpasar, pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
 
                 // AOI & pendidikan tampil by default
