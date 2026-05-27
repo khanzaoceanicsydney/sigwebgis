@@ -302,9 +302,6 @@
         let mapInited = false;
         let chartInited = false;
 
-        // Base URL raw GitHub untuk akses file GeoJSON
-        const RAW = 'https://raw.githubusercontent.com/khanzaoceanicsydney/sigwebgis/main/';
-
         function initMap() {
             if (mapInited) return;
 
@@ -443,6 +440,7 @@
             }
 
             // ==================== MUAT SEMUA LAYER ====================
+            const RAW = 'https://raw.githubusercontent.com/khanzaoceanicsydney/sigwebgis/main/';
             Promise.all([
                 loadAOI(RAW + 'denpasar.geojson'),
                 loadGeoJSON(RAW + 'pendidikan.geojson',   '#3b82f6'),
