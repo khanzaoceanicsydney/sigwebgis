@@ -363,7 +363,7 @@
                 return content;
             }
 
-            // ==================== LOAD GEOJSON ====================
+            // ==================== LOAD GEOJSON (dengan popup) ====================
             async function loadGeoJSON(file, color) {
                 const response = await fetch(file);
                 const data = await response.json();
@@ -385,31 +385,52 @@
 
                     onEachFeature: function (feature, layer) {
                         if (feature.properties) {
-                            layer.bindPopup(
-                                popupContent(feature.properties),
-                                { className: 'custom-popup', maxWidth: 350 }
-                            );
+                            const content = popupContent(feature.properties);
+                            layer.bindPopup(content, { className: 'custom-popup', maxWidth: 350 });
+                            layer.on('click', function (e) {
+                                L.DomEvent.stopPropagation(e);
+                                layer.openPopup();
+                            });
                         }
                     }
 
                 });
             }
 
+            // ==================== LOAD AOI (tanpa popup, hanya outline) ====================
+            async function loadAOI(file) {
+                const response = await fetch(file);
+                const data = await response.json();
+                return L.geoJSON(data, {
+                    style: {
+                        color: '#059669',
+                        fillColor: '#059669',
+                        weight: 3,
+                        opacity: 1,
+                        fillOpacity: 0.08,
+                        dashArray: '6,4'
+                    }
+                });
+            }
+
             // ==================== MUAT SEMUA LAYER ====================
             Promise.all([
+                loadAOI('denpasar.geojson'),
                 loadGeoJSON('pendidikan.geojson',   '#3b82f6'),
-                loadGeoJSON('rumashsakit.geojson',   '#ef4444'),
+                loadGeoJSON('rumashsakit.geojson',  '#ef4444'),
                 loadGeoJSON('niaga.geojson',         '#f97316'),
                 loadGeoJSON('permukiman.geojson',    '#eab308'),
                 loadGeoJSON('saranaibadah.geojson',  '#a855f7'),
                 loadGeoJSON('cagarbudaya.geojson',   '#6b7280'),
                 loadGeoJSON('pemerintahan.geojson',  '#b8860b')
-            ]).then(([pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
+            ]).then(([denpasar, pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
 
-                // Layer pendidikan tampil by default
+                // AOI & pendidikan tampil by default
+                denpasar.addTo(map);
                 pendidikan.addTo(map);
 
                 const overlayMaps = {
+                    "Kota Denpasar": denpasar,
                     "Pendidikan":    pendidikan,
                     "Rumah Sakit":   rumahsakit,
                     "Niaga":         niaga,
@@ -449,6 +470,10 @@
                             padding-bottom:5px;
                         ">Legenda</h4>
 
+                        <div style="margin-bottom:6px;">
+                            <span style="display:inline-block;width:18px;height:3px;background:#059669;border-top:2px dashed #059669;margin-right:8px;vertical-align:middle;"></span>
+                            Kota Denpasar
+                        </div>
                         <div style="margin-bottom:6px;">
                             <span style="display:inline-block;width:12px;height:12px;background:#3b82f6;border-radius:50%;margin-right:8px;"></span>
                             Pendidikan
