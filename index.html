@@ -319,7 +319,6 @@
                 loadGeoJSON(RAW + 'pemerintahan.geojson', '#b8860b')
             ]).then(([denpasar, pendidikan, rumahsakit, niaga, permukiman, ibadah, cagarbudaya, pemerintahan]) => {
                 denpasar.addTo(map);
-                pendidikan.addTo(map);
                 const overlayMaps = {
                     'Kota Denpasar': denpasar,
                     'Pendidikan':    pendidikan,
