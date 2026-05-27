@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "cagarbudaya",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 698.0, "NAMOBJ": null, "FCODE": "GG01060020", "REMARK": "Pariwisata/Seni/Budaya/Olah Raga Lainnya", "METADATA": "RBI2500020221231PROVINSIBALI", "SRS_ID": "4326", "FGSICB": null, "KNDSCB": null, "KRTACB": null, "PNGLCB": null, "PRKTCB": null, "STTPCB": null }, "geometry": { "type": "Point", "coordinates": [ 115.233569673000034, -8.672753260999968 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 699.0, "NAMOBJ": null, "FCODE": "GG01060020", "REMARK": "Pariwisata/Seni/Budaya/Olah Raga Lainnya", "METADATA": "RBI2500020221231PROVINSIBALI", "SRS_ID": "4326", "FGSICB": null, "KNDSCB": null, "KRTACB": null, "PNGLCB": null, "PRKTCB": null, "STTPCB": null }, "geometry": { "type": "Point", "coordinates": [ 115.244706463000057, -8.673337275999927 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 700.0, "NAMOBJ": null, "FCODE": "GG01060020", "REMARK": "Patung Catur Muka", "METADATA": null, "SRS_ID": null, "FGSICB": 13, "KNDSCB": 1, "KRTACB": 1, "PNGLCB": 8, "PRKTCB": 1, "STTPCB": 1 }, "geometry": { "type": "Point", "coordinates": [ 115.216941643000041, -8.655973747999951 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 702.0, "NAMOBJ": null, "FCODE": "GG01060020", "REMARK": "Patung Jalan Diponegoro", "METADATA": null, "SRS_ID": null, "FGSICB": 13, "KNDSCB": 1, "KRTACB": 3, "PNGLCB": 8, "PRKTCB": 1, "STTPCB": 1 }, "geometry": { "type": "Point", "coordinates": [ 115.214895876000014, -8.658879015999958 ] } }
+]
+}
